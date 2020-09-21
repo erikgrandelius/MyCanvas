@@ -3,7 +3,16 @@ package com.e.minipaint
 val Boolean.double //In order to do math with the truth-value of an expression. Might be better to use if-statement in the lambda
     get() = if (this) 1.0 else 0.0
 
-class BezierFitter constructor(sampledX: Array<Number>, sampledY: Array<Number>, tol: Number = 1e-4){
+class BezierFitter {
+    /*
+    *TO DO:
+    * - Make sure solveTridiagonal works
+    * - Store the control points so that the curve can be evaluated
+    * - Implement another class that uses this class to find the bezier fit with the minimum points needed to satisfy error less then some tol
+    * - The above would be fitCurve from TimeParametrizedSpline, ported to Kotlin and using this Bezier implementation instead of B-splines
+    * - Maybe this should not be a class, but rather have a function that returns an object "Bezier", which has a call method and the control points as property
+    * -
+     * */
     fun solveTridiagonal(A : List<DoubleArray>,  b : DoubleArray ): DoubleArray {
         /*
         * Implements the Thomas algorithm for solving the tri-diagonal linear system.
@@ -56,7 +65,7 @@ class BezierFitter constructor(sampledX: Array<Number>, sampledY: Array<Number>,
         *  )
          */
         val n = x.size - 1
-        val C = listOf<DoubleArray>(DoubleArray(n-1, { i -> 1 + (i == n-1).double}),
+        val C = listOf(DoubleArray(n-1, { i -> 1 + (i == n-1).double}),
             DoubleArray(n, {i -> 4 - 2 * (i == 0).double + 3 * (i == n).double}),
             DoubleArray(n- 1, {i -> 1.0})
         )
