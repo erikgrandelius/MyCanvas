@@ -36,8 +36,9 @@ class BezierFitter {
         b_temp[0] = b[0]/d_diag[0]
         for (i in 1 .. n - 2) {
             d_upper_temp[i] = d_upper[i]/(d_diag[i]-d_lower[i]*d_upper_temp[i-1])
-            b_temp[i] = (b[i] - b_temp[i-1] * d_lower[i] )/(d_diag[i] - d_lower[i] * d_upper_temp[i-1])
-            println(i.toString(i))}
+            b_temp[i] = (b[i] - b_temp[i-1] * d_lower[i] )/(d_diag[i] - d_lower[i] * d_upper_temp[i-1]) // Seems like something is not right with the indexing here. Raises an error
+            println(i.toString(i))
+            }
         b[n-1] = (b[n-1] - b_temp[n-2] * d_lower[n-2])/(d_diag[n-1] - d_lower[n-1] * d_upper_temp[n-2])
         val x = DoubleArray(n)
         x[n-1] = b_temp[n-1]
