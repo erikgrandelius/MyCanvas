@@ -1,6 +1,6 @@
 package com.e.minipaint
 
-val Boolean.double
+val Boolean.double //In order to do math with the truth-value of an expression. Might be better to use if-statement in the lambda
     get() = if (this) 1.0 else 0.0
 
 class BezierFitter constructor(sampledX: Array<Number>, sampledY: Array<Number>, tol: Number = 1e-4){
@@ -39,6 +39,22 @@ class BezierFitter constructor(sampledX: Array<Number>, sampledY: Array<Number>,
     }
 
     fun getBezierCoef(x: DoubleArray, y: DoubleArray): List<DoubleArray>{
+        /*
+        * Finds the handlepoints given a set of points to interpolate.
+        *
+        * Has to handle x and y separately as long as solveTridiagonal only handles vectors as b
+        *
+        * Parameters:
+        *  x - x-values of the points to interpolate
+        *  y - y-values of the points to interpolate
+        * Returns:
+        *  listof(
+        *   A_x: The x_values of handle point A
+        *   A_y: The y_values of handle point A
+        *   B_x: The x_values of handle point B
+        *   B_y: The y_values of handle point B
+        *  )
+         */
         val n = x.size - 1
         val C = listOf<DoubleArray>(DoubleArray(n-1, { i -> 1 + (i == n-1).double}),
             DoubleArray(n, {i -> 4 - 2 * (i == 0).double + 3 * (i == n).double}),
