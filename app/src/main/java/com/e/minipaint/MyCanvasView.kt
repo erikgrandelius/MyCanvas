@@ -40,8 +40,8 @@ class MyCanvasView(context: Context): View(context) {
     private var currentX = 0f
     private var currentY = 0f
 
-    var rawStrokeX = mutableListOf(currentX)
-    var rawStrokeY = mutableListOf(currentY)
+    var rawStrokeX = mutableListOf<Float>()
+    var rawStrokeY = mutableListOf<Float>()
 
 
 
@@ -97,9 +97,17 @@ class MyCanvasView(context: Context): View(context) {
     }
 
     private fun touchUp() {
-        println("rawstroke: ${rawStrokeX.size}")
-        rawStrokeX.clear()
+        val model = BezierInterpolate()
+        val a = model.getBezierCoef(rawStrokeX.toFloatArray(), rawStrokeY.toFloatArray())
         path.reset()
+        val cubicPath = Path()
+        cubicPath.moveTo(rawStrokeX[0], rawStrokeY[0])
+        for (i in 0..rawStrokeX.size - 2){
+            cubicPath.cubicTo(a[0][i], a[1][i], a[2][i], a[3][i], rawStrokeX[i +1], rawStrokeY[i + 1])
+        }
+        extraCanvas.drawPath(cubicPath, paint)
+        rawStrokeX.clear()
+        rawStrokeY.clear()
     }
 
 }

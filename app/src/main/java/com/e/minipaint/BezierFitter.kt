@@ -9,7 +9,7 @@ import kotlin.math.pow
 Here we collect numpy-like methods for DoubleArray.
  */
 //In order to do math with the truth-value of an expression. Might be better to use if-statement in the lambda
-val Boolean.double get() = if (this) 1.0 else 0.0
+val Boolean.float get() = if (this) 1F else 0F
 fun DoubleArray.toString() = Arrays.toString(this)
 fun IntArray.toString() =  Arrays.toString(this)
 operator fun DoubleArray.times(a: DoubleArray) = DoubleArray(this.size){ i -> this[i] * a[i]}
@@ -128,7 +128,7 @@ class BezierInterpolate() {
     *        which has a call method and the control points as property
     * -
      * */
-    fun solveTridiagonal(A : List<DoubleArray>,  b : DoubleArray): DoubleArray {
+    fun solveTridiagonal(A : List<FloatArray>,  b : FloatArray): FloatArray {
         /*
         * Solve Ax = b, for tridiagonal Matrix A.
         * Implements the Thomas algorithm (more or less Gaussian elimination)
@@ -147,17 +147,17 @@ class BezierInterpolate() {
         */
 
         val d = b
-        val a = A[0]
-        val b = A[1]
-        val c = A[2]
-        var w : Double
+        val a = A[0].copyOf()
+        val b = A[1].copyOf()
+        val c = A[2].copyOf()
+        var w : Float
         val n = b.size
         for (i in 1 .. n - 1) {
             w = a[i - 1]/b[i - 1]
             b[i] = b[i] - w * c[i - 1]
             d[i] = d[i] - w * d[i - 1]
         }
-        val x = DoubleArray(n)
+        val x = FloatArray(n)
         x[n-1] = d[n - 1]/b[n-1]
         for (i in n-2 downTo 0) {
             x[i] = (d[i] - c[i] * x[i + 1])/b[i]
@@ -165,7 +165,7 @@ class BezierInterpolate() {
         return x
     }
 
-    fun getBezierCoef(x: DoubleArray, y: DoubleArray): List<DoubleArray>{
+    fun getBezierCoef(x: FloatArray, y: FloatArray): List<FloatArray>{
         /*
         * Finds the handlepoints given a set of points to interpolate.
         *
@@ -183,21 +183,20 @@ class BezierInterpolate() {
         *  )
          */
         val n = x.size - 1
-        val C = listOf(DoubleArray(n-1, { i -> 1 + (i == n-1).double}),
-            DoubleArray(n, {i -> 4 - 2 * (i == 0).double + 3 * (i == n).double}),
-            DoubleArray(n- 1, {i -> 1.0})
+        val C = listOf(FloatArray(n-1, { i -> 1F + (i == n-2).float}),
+            FloatArray(n, { i -> 4F - 2 * (i == 0).float + 3 * (i == (n-1)).float}),
+            FloatArray(n- 1, {i -> 1F})
         )
-        val P_x = DoubleArray(n, { i -> 2 * (2 * x[i] + x[i + 1])})
+        val P_x = FloatArray(n, { i -> 2 * (2 * x[i] + x[i + 1])})
         P_x[0] = x[0] + 2 * x[1]
         P_x[n-1] = 8 * x[n - 1] + x[n]
-        val P_y = DoubleArray(n, {i -> 2 * (2 * y[i] + y[i + 1])})
+        val P_y = FloatArray(n, { i -> 2 * (2 * y[i] + y[i + 1])})
         P_y[0] = y[0] + 2 * y[1]
         P_y[n-1] = 8 * y[n - 1] + y[n]
-        val A_x = this.solveTridiagonal(C, P_x)
         val A_y = this.solveTridiagonal(C, P_y)
-        val B_x = DoubleArray(n, { i -> if (i < n-1) 2 * x[i + 1] - A_x[i + 1] else (A_x[n - 1] + x[n]) / 2})
-        val B_y = DoubleArray(n, { i -> if (i < n-1) 2 * y[i + 1] - A_y[i + 1] else (A_y[n - 1] + y[n]) / 2})
-
+        val A_x = this.solveTridiagonal(C, P_x)
+        val B_x = FloatArray(n, { i -> if (i < n-1) 2 * x[i + 1] - A_x[i + 1] else (A_x[n - 1] + x[n]) / 2})
+        val B_y = FloatArray(n, { i -> if (i < n-1) 2 * y[i + 1] - A_y[i + 1] else (A_y[n - 1] + y[n]) / 2})
         return listOf(A_x, A_y, B_x, B_y)
     }
 }
