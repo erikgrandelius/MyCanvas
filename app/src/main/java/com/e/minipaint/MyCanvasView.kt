@@ -10,6 +10,9 @@ import android.graphics.Path
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 
+import android.graphics.Matrix
+import java.util.*
+
 
 class MyCanvasView(context: Context): View(context) {
     private lateinit var extraCanvas: Canvas
@@ -36,6 +39,12 @@ class MyCanvasView(context: Context): View(context) {
     private var motionTouchEventY = 0f
     private var currentX = 0f
     private var currentY = 0f
+
+    var rawStrokeX = mutableListOf(currentX)
+    var rawStrokeY = mutableListOf(currentY)
+
+
+
     private val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop * 00.1
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
@@ -67,6 +76,7 @@ class MyCanvasView(context: Context): View(context) {
     private fun touchStart() {
         path.reset()
         path.moveTo(motionTouchEventX, motionTouchEventY)
+        println(motionTouchEventX)
         currentX = motionTouchEventX
         currentY = motionTouchEventY
     }
@@ -75,17 +85,20 @@ class MyCanvasView(context: Context): View(context) {
         val dx = Math.abs(motionTouchEventX - currentX)
         val dy = Math.abs(motionTouchEventY - currentY)
         if (dx >= touchTolerance || dy >= touchTolerance) {
-            // QuadTo() adds a quadratic bezier from the last point,
-            // approaching control point (x1,y1), and ending at (x2,y2).
             path.lineTo(motionTouchEventX, motionTouchEventY)
             currentX = motionTouchEventX
             currentY = motionTouchEventY
+            rawStrokeX.add(currentX)
+            rawStrokeY.add(currentY)
             // Draw the path in the extra bitmap to cache it.
             extraCanvas.drawPath(path, paint)
         }
         invalidate()
     }
+
     private fun touchUp() {
+        println("rawstroke: ${rawStrokeX.size}")
+        rawStrokeX.clear()
         path.reset()
     }
 
