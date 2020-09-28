@@ -97,8 +97,8 @@ class MyCanvasView(context: Context): View(context) {
     }
 
     private fun touchUp() {
-        val model = BezierInterpolate()
-        val a = model.getBezierCoef(rawStrokeX.toFloatArray(), rawStrokeY.toFloatArray())
+        val model = Spline(rawStrokeX.toFloatArray(), rawStrokeY.toFloatArray(), rawStrokeX.toFloatArray())
+        val a = model.b
         path.reset()
         val cubicPath = Path()
         cubicPath.moveTo(rawStrokeX[0], rawStrokeY[0])
